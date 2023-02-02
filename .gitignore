@@ -1,0 +1,15 @@
+# 장고
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# PyInstaller
+*.manifest
+*.spec
+
+### 파이참
+.idea/
