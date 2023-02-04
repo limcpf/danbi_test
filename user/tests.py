@@ -144,7 +144,7 @@ class UserTests(TestCase):
 
         res_json = result.json()
 
-        self.assertEqual(result.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(result.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(res_json["access_token"])
         self.assertEqual(res_json["user"]["pk"], self.pk)
 
