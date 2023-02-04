@@ -19,8 +19,8 @@ class BaseTimeModel(models.Model):
 class RoutineManager(models.Manager):
     use_for_related_fields = True
 
-    def live(self, **kwargs):
-        return self.filter(is_deleted=False, **kwargs)
+    def live(self, account_id, **kwargs):
+        return self.filter(account_id=account_id, is_deleted=False, **kwargs)
 
 
 class Routine(BaseTimeModel):
@@ -44,7 +44,7 @@ class Routine(BaseTimeModel):
     is_deleted = models.BooleanField(default=False, null=False)
 
     def __str__(self):
-        return self.routine_id
+        return str(self.routine_id)
 
     objects = RoutineManager()
 
