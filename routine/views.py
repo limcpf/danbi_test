@@ -85,11 +85,19 @@ class RoutineViewSet(viewsets.ModelViewSet):
         return get_response(serializer.data, ResponseEnum.ROUTINE_DETAIL_OK)
 
     def perform_update(self, serializer, *args, **kwargs):
-        days = self.request.data["days"]
+        days = []
+
+        try:
+            days = self.request.data["days"]
+        except KeyError as e:
+            pass # day가 없다해도 update 진행을 위함
         pk = kwargs["pk"]
 
         if days:
-            days = list(map(lambda d: Days[d].value, days))
+            try:
+                days = list(map(lambda d: Days[d].value, days))
+            except KeyError:
+                raise exceptions.APIException(detail="올바른 day 값이 아닙니다.", code=status.HTTP_400_BAD_REQUEST)
 
             for day in days:
                 RoutineDay.objects.get_or_create(day=day, routine_id=pk)
