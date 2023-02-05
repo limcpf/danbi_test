@@ -30,8 +30,6 @@ class EnumTests(TestCase):
 
         self.routine_id = routine.routine_id
 
-    def test_enum_value(self):
-        print(DaysChoices.names)
 
     def test_date(self):
         today = '2023-02-04'

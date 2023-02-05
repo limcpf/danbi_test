@@ -64,7 +64,6 @@ class RoutineViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk):
         try:
             queryset = self.get_queryset()
-            print(queryset)
             queryset.days = self.get_days(RoutineDay.objects.filter(routine_id=pk))
         except Routine.DoesNotExist:
             queryset = None
