@@ -50,10 +50,10 @@ class RoutineCreateSerializer(ModelSerializer):
 
     @transaction.atomic()
     def create(self, data):
-        days = data.pop("days")  # days는 routine 을 만드는데 사용하지 않음
-        routine = Routine.objects.create(**data)
-        RoutineResult.objects.create(routine_id=routine.routine_id)
         try:
+            days = data.pop("days")  # days는 routine 을 만드는데 사용하지 않음
+            routine = Routine.objects.create(**data)
+            RoutineResult.objects.create(routine_id=routine.routine_id)
             self.create_day(days, routine.routine_id)
         except KeyError as e:
             raise exceptions.APIException(detail="올바른 day 값이 아닙니다.", code=status.HTTP_400_BAD_REQUEST)
