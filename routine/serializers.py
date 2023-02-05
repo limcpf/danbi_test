@@ -36,6 +36,7 @@ class RoutineSerializer(ModelSerializer):
 
 
 
+
 class RoutineCreateSerializer(ModelSerializer):
     class Meta:
         model = Routine

@@ -47,7 +47,6 @@ class Routine(BaseTimeModel):
     def __str__(self):
         return str(self.routine_id)
 
-    @transaction.atomic()
     def delete(self, using=None, keep_parents=False):
         RoutineResult.objects.filter(routine_id=self.routine_id).update(is_deleted=True)
         self.is_deleted = True

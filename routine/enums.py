@@ -29,6 +29,7 @@ class ResponseEnum(Enum):
     ROUTINE_DETAIL_OK = ("Routine lookup was successful.", 200)
     ROUTINE_NOT_FOUND = ("Routine lookup was failed", 404)
     ROUTINE_DELETE_OK = ("The routine has been deleted.", 204)
+    ROUTINE_UPDATE_OK = ("The routine has been modified.", 200)
 
 
 class DaysChoices(models.IntegerChoices):

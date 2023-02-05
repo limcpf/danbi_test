@@ -45,3 +45,4 @@ class EnumTests(TestCase):
         except:
             self.assertTrue(False, msg="의도치 않은 에러")
 
+
