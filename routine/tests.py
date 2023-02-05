@@ -1,3 +1,5 @@
+from datetime import date, datetime
+
 from django.test import TestCase
 
 from routine.enums import Days, RoutineCategory, DaysChoices
@@ -29,7 +31,19 @@ class EnumTests(TestCase):
         self.routine_id = routine.routine_id
 
     def test_enum_value(self):
-        for day in ["MON", "TUE"]:
-            day = Days[day].value
-            RoutineDay.objects.create(day=day, routine_id=self.routine_id)
+        print(DaysChoices.names)
+
+    def test_date(self):
+        today = '2023-02-04'
+        day = date.weekday(datetime.strptime(today, "%Y-%m-%d"))
+        self.assertEqual(day, 5)  # 토요일
+
+        today = ''
+        try:
+            day = date.weekday(datetime.strptime(today, "%Y-%m-%d"))
+            self.assertTrue(False, msg="빈 값인데 날짜가 생성됨")
+        except ValueError as e:
+            self.assertTrue(True)
+        except:
+            self.assertTrue(False, msg="의도치 않은 에러")
 
