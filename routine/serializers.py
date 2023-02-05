@@ -8,27 +8,25 @@ from routine.models import Routine, RoutineResult, RoutineDay
 class RoutineSerializer(serializers.Serializer):
     class Meta:
         model = Routine
-        fields = ["routine_id", "title", "category", "goal", "is_alarm", "created_at", "modified_at"]
+        fields = ["routine_id", "title", "category", "goal", "days"]
 
-    routine_id = serializers.CharField(label="id" ,max_length=32, read_only=True)
+    routine_id = serializers.CharField(label="id", max_length=32, read_only=True)
     title = serializers.CharField(max_length=255, initial="title")
     category = serializers.ChoiceField(
         choices=RoutineCategoryChoices,
         initial=RoutineCategoryChoices.HOMEWORK.value
     )
     goal = serializers.CharField(initial="goal")
-    is_alarm = serializers.BooleanField()
     days = serializers.ListField(
         child=serializers.ChoiceField(choices=DaysChoices.names),
         required=False,
         initial=["MON"]
     )
-    created_at = serializers.DateTimeField(read_only=True)
-    modified_at = serializers.DateTimeField(read_only=True)
+    result = serializers.CharField(read_only=True)
 
     @transaction.atomic()
     def create(self, data):
-        data.pop("days") # days는 routine 을 만드는데 사용하지 않음
+        data.pop("days")  # days는 routine 을 만드는데 사용하지 않음
         routine = Routine.objects.create(**data)
         self.create_result(routine.routine_id)
         try:
@@ -48,17 +46,3 @@ class RoutineSerializer(serializers.Serializer):
         for day in days:
             day = Days[day].value
             RoutineDay.objects.create(day=day, routine_id=routine_id)
-
-class RoutineDetailSerializer(serializers.Serializer):
-    class Meta:
-        model = Routine
-        fields = ["account_id", "title", "category", "goal", "is_alarm"]
-
-    title = serializers.CharField(max_length=255)
-    category = serializers.ChoiceField(choices=RoutineCategoryChoices)
-    goal = serializers.CharField()
-    is_alarm = serializers.BooleanField()
-    result = serializers.ChoiceField(choices=RoutineResultChoices, read_only=True)
-    days = serializers.ListField(child=serializers.ChoiceField(choices=DaysChoices), read_only=True)
-    created_at = serializers.DateTimeField(read_only=True)
-    modified_at = serializers.DateTimeField(read_only=True)

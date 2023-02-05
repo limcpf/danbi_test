@@ -9,11 +9,14 @@ from routine.models import Routine, RoutineDay, RoutineResult
 from routine.serializers import RoutineSerializer
 
 
+# TODO: Response return 해주는 util 필요할듯...
+
+
 class RoutineViewSet(viewsets.ModelViewSet):
-    routine_id = None
     queryset = Routine.objects.all()
     serializer_class = RoutineSerializer
     permission_classes = [permissions.IsAuthenticated]
+    routine_id = None
 
     def list(self, request, *args, **kwargs):
         day = None
@@ -59,3 +62,38 @@ class RoutineViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         routine = serializer.save(account_id=self.request.user.id)
         self.routine_id = routine.routine_id
+
+    def retrieve(self, request, pk):
+        try:
+            queryset = Routine.objects.live_one(self.request.user.id, pk)
+            queryset.days = self.get_days(RoutineDay.objects.filter(routine_id=pk))
+        except Routine.DoesNotExist:
+            queryset = None
+
+        if queryset:
+            serializer = RoutineSerializer(queryset)
+            return Response(
+                {
+                    "data": serializer.data,
+                    "message": {
+                        "msg": "Routine lookup was successful.",
+                        "status": "ROUTINE_DETAIL_OK"
+                    }
+                },
+                status=201
+            )
+        return Response(
+            {
+                "data": {},
+                "message": {
+                    "msg": "Routine lookup was failed",
+                    "status": "ROUTINE_NOT_FOUND"
+                }
+            },
+            status=404
+        )
+
+        return Response(serializer.data)
+
+    def get_days(self, days):
+        return list(map(str, days))

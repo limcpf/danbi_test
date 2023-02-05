@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import OuterRef
 
 import user.models
 from routine.enums import RoutineCategoryChoices, RoutineResultChoices, DaysChoices, Days
@@ -21,6 +22,17 @@ class RoutineManager(models.Manager):
 
     def live(self, account_id, **kwargs):
         return self.filter(account_id=account_id, is_deleted=False, **kwargs)
+
+    def live_one(self, account_id, routine_id, **kwargs):
+        return self.annotate(
+                    result=RoutineResult.objects.filter(
+                        routine_id=OuterRef("routine_id")).values("result")
+                ).get(
+                    account_id=account_id,
+                    routine_id=routine_id,
+                    is_deleted=False,
+                    **kwargs
+                )
 
 
 class Routine(BaseTimeModel):
@@ -73,6 +85,7 @@ class RoutineDay(BaseTimeModel):
     """
     루틴 수행 요일 모델
     """
+
     class Meta:
         unique_together = (('day', 'routine'),)
 
