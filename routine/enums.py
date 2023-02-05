@@ -24,13 +24,13 @@ class RoutineResult(Enum):
 
 
 class DaysChoices(models.IntegerChoices):
-    MONDAY = Days.MON.value, Days.MON.name
-    TUESDAY = Days.TUE.value, Days.TUE.name
-    WEDNESDAY = Days.WED.value, Days.WED.name
-    THURSDAY = Days.THU.value, Days.THU.name
-    FRIDAY = Days.FRI.value, Days.FRI.name
-    SATURDAY = Days.SAT.value, Days.SAT.name
-    SUNDAY = Days.SUN.value, Days.SUN.name
+    MON = (Days.MON.value, Days.MON.name)
+    TUE = (Days.TUE.value, Days.TUE.name)
+    WED = (Days.WED.value, Days.WED.name)
+    THU = (Days.THU.value, Days.THU.name)
+    FRI = (Days.FRI.value, Days.FRI.name)
+    SAT = (Days.SAT.value, Days.SAT.name)
+    SUN = (Days.SUN.value, Days.SUN.name)
 
 
 class RoutineCategoryChoices(models.TextChoices):
