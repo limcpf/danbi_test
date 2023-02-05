@@ -5,8 +5,10 @@ from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework.response import Response
 from rest_framework import viewsets, permissions, exceptions, status
 
+from routine.enums import ResponseEnum
 from routine.models import Routine, RoutineDay, RoutineResult
 from routine.serializers import RoutineSerializer, RoutineCreateSerializer
+from routine.utils import get_response
 
 
 # TODO: Response return 해주는 util 필요할듯...
@@ -34,28 +36,13 @@ class RoutineViewSet(viewsets.ModelViewSet):
                 routineday__day=day
             ), many=True
         )
-        return Response({
-            "data": serializer.data,
-            "message": {"msg": "Routine lookup was successful.",
-                        "status": "ROUTINE_LIST_OK"}
-        })
+        return get_response(serializer.data, ResponseEnum.ROUTINE_LIST_OK)
 
     def create(self, request, *args, **kwargs):
         serializer = RoutineCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return Response(
-            {
-                "data": {
-                    "routine_id": self.routine_id
-                },
-                "message": {
-                    "msg": "You have successfully created the routine.",
-                    "status": "ROUTINE_CREATE_OK"
-                }
-            },
-            status=200
-        )
+        return get_response({"routine_id": self.routine_id}, ResponseEnum.ROUTINE_CREATE_OK)
 
     def perform_create(self, serializer):
         routine = serializer.save(account_id=self.request.user.id)
@@ -63,34 +50,15 @@ class RoutineViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk):
         try:
-            queryset = self.get_queryset()
+            queryset = self.get_queryset().get(routine_id=pk)
             queryset.days = self.get_days(RoutineDay.objects.filter(routine_id=pk))
         except Routine.DoesNotExist:
-            queryset = None
+            return get_response({}, ResponseEnum.ROUTINE_NOT_FOUND)
 
         if queryset:
             serializer = RoutineSerializer(queryset)
-            return Response(
-                {
-                    "data": serializer.data,
-                    "message": {
-                        "msg": "Routine lookup was successful.",
-                        "status": "ROUTINE_DETAIL_OK"
-                    }
-                },
-                status=200
-            )
+            return get_response(serializer.data, ResponseEnum.ROUTINE_DETAIL_OK)
 
-        return Response(
-            {
-                "data": {},
-                "message": {
-                    "msg": "Routine lookup was failed",
-                    "status": "ROUTINE_NOT_FOUND"
-                }
-            },
-            status=404
-        )
 
     def destroy(self, request, *args, **kwargs):
         try:
