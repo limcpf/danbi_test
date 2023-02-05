@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.db.models import OuterRef
 
 import user.models
@@ -20,19 +20,8 @@ class BaseTimeModel(models.Model):
 class RoutineManager(models.Manager):
     use_for_related_fields = True
 
-    def live(self, account_id, **kwargs):
-        return self.filter(account_id=account_id, is_deleted=False, **kwargs)
-
-    def live_one(self, account_id, routine_id, **kwargs):
-        return self.annotate(
-                    result=RoutineResult.objects.filter(
-                        routine_id=OuterRef("routine_id")).values("result")
-                ).get(
-                    account_id=account_id,
-                    routine_id=routine_id,
-                    is_deleted=False,
-                    **kwargs
-                )
+    def live(self, **kwargs):
+        return self.filter(is_deleted=False, **kwargs)
 
 
 class Routine(BaseTimeModel):
@@ -57,6 +46,12 @@ class Routine(BaseTimeModel):
 
     def __str__(self):
         return str(self.routine_id)
+
+    @transaction.atomic()
+    def delete(self, using=None, keep_parents=False):
+        RoutineResult.objects.filter(routine_id=self.routine_id).update(is_deleted=True)
+        self.is_deleted = True
+        self.save()
 
     objects = RoutineManager()
 

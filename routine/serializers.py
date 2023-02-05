@@ -35,6 +35,7 @@ class RoutineSerializer(ModelSerializer):
         return RoutineResult.objects.get(routine=instance).result  # "H"
 
 
+
 class RoutineCreateSerializer(ModelSerializer):
     class Meta:
         model = Routine
