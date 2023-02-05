@@ -24,8 +24,9 @@ class RoutineSerializer(ModelSerializer):
 
     class Meta:
         model = Routine
-        fields = ["routine_id", "title", "category", "goal", "is_alarm", "days", "result"]
+        fields = ["routine_id", "title", "category", "goal", "days", "result"]
         read_only_fields = ["result"]
+        write_only_fields = ["is_alarm"]
 
     def get_days(self, instance):
         return list(map(str, RoutineDay.objects.filter(routine=instance)))
